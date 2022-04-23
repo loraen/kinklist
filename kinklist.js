@@ -84,8 +84,12 @@ $(function(){
                         .attr('title', levels[i])
                         .appendTo($container)
                         .on('click', function(){
-                            $container.find('button').removeClass('selected');
-                            $(this).addClass('selected');
+                            if ($(this).hasClass('selected')) {
+                                 $(this).removeClass('selected');
+                            } else {
+                                $container.find('button').removeClass('selected');
+                                $(this).addClass('selected');
+                            }
                         });
             }
             return $container;
