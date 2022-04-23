@@ -85,7 +85,7 @@ $(function(){
                         .addClass('choice')
                         .addClass(level[levels[i]])
                         .data('level', levels[i])
-                        .data('levelInt', i)
+                        .data('levelInt', i + 1)
                         .attr('title', levels[i])
                         .appendTo($container)
                         .on('click', function(){
@@ -544,8 +544,12 @@ $(function(){
             var valueIndex = 0;
             $('#InputList .choices').each(function(){
                 var $this = $(this);
-                var value = values[valueIndex++];
-                $this.children().eq(value).addClass('selected');
+                var lvlInt = values[valueIndex++];
+                if (!lvlInt) {
+                    // 0 means NOT Selected
+                    return;
+                }
+                $this.children().eq(lvlIn - 1).addClass('selected');
             });
         },
         saveSelection: function(){
