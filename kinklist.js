@@ -54,8 +54,6 @@ $(function(){
     $("#listType").change(function() {
         changeList();
     }); 
-    
-    changeList();
 
     inputKinks = {
         $columns: [],
@@ -175,8 +173,10 @@ $(function(){
             });
         },
         init: function(){
+            changeList();
+
             // Set up DOM
-            inputKinks.fillInputList();
+            //inputKinks.fillInputList();
 
             // Read hash
             inputKinks.parseHash();
