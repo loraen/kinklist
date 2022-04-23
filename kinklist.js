@@ -40,20 +40,24 @@ $(function(){
 
     var imgurClientId = '9db53e5936cd02f';
 
-    function changeList() {
+    function loadList() {
         fileToRead = $("#listType").val() + '.txt';
-        $.get(fileToRead, function(data) {
-            $('#Kinks').text(data);
-            var selection = inputKinks.saveSelection();
-            var kinksText = $('#Kinks').val();
+        $.get(fileToRead, function(kinksText) {
+            $('#Kinks').text(kinksText);
             kinks = inputKinks.parseKinksText(kinksText);
             inputKinks.fillInputList();
         }, 'text');
     }
 
+    function saveList() {
+        var selection = inputKinks.saveSelection();
+    }
+
     $("#listType").change(function() {
+        saveList()
         changeList();
     }); 
+    loadList();
 
     inputKinks = {
         $columns: [],
@@ -173,10 +177,8 @@ $(function(){
             });
         },
         init: function(){
-            changeList();
-
             // Set up DOM
-            //inputKinks.fillInputList();
+            inputKinks.fillInputList();
 
             // Read hash
             inputKinks.parseHash();
