@@ -40,7 +40,7 @@ $(function(){
 
     var imgurClientId = '9db53e5936cd02f';
 
-    $("#listType").change(function() {
+    function changeList() {
         fileToRead = $("#listType").val() + '.txt';
         $.get(fileToRead, function(data) {
             $('#Kinks').text(data);
@@ -49,9 +49,14 @@ $(function(){
             kinks = inputKinks.parseKinksText(kinksText);
             inputKinks.fillInputList();
         }, 'text');
+    }
 
+    $("#listType").change(function() {
+        changeList();
     }); 
     
+    changeList();
+
     inputKinks = {
         $columns: [],
         createCategory: function(name, fields){
