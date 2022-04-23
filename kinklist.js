@@ -40,13 +40,12 @@ $(function(){
 
     var imgurClientId = '9db53e5936cd02f';
 
-    function loadList() {
+    async function loadList() {
         fileToRead = $("#listType").val() + '.txt';
-        $.get(fileToRead, function(kinksText) {
-            $('#Kinks').text(kinksText);
-            kinks = inputKinks.parseKinksText(kinksText);
-            inputKinks.fillInputList();
-        }, 'text');
+        var kinksText = await $.get(fileToRead);
+
+        $('#Kinks').text(kinksText);
+        kinks = inputKinks.parseKinksText(kinksText);
     }
 
     function saveList() {
@@ -57,7 +56,12 @@ $(function(){
         saveList()
         changeList();
     }); 
-    loadList();
+
+    async function init() {
+        await loadList();
+        inputKinks.init();
+    }
+    setTimeout(init, 0);
 
     inputKinks = {
         $columns: [],
@@ -704,9 +708,6 @@ $(function(){
         colors[text] = color;
         level[text] = cssClass;
     });
-
-    kinks = inputKinks.parseKinksText($('#Kinks').text().trim());
-    inputKinks.init();
 
     (function(){
         var $popup = $('#InputOverlay');
