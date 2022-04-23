@@ -125,10 +125,6 @@
 * Glasses
 ? A preference for characters who wear glasses.
 
-
-* Bells
-? Wearing a cowbell, bell collar, bell bracelets, etc
-
 * Bunny suit
 
 * Maid
@@ -378,6 +374,8 @@
 * Smoking
 ? Refers to the act of smoking and/or receiving pleasure from an aspect of smoking or smoke during an RP.
 
+* Bells
+? Wearing a cowbell, bell collar, bell bracelets, etc
 
 
 
