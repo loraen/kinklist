@@ -551,7 +551,7 @@ $(function(){
                     // 0 means NOT Selected
                     return;
                 }
-                $this.children().eq(lvlIn - 1).addClass('selected');
+                $this.children().eq(lvlInt - 1).addClass('selected');
             });
         },
         saveSelection: function(){
