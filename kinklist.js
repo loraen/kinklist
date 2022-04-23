@@ -397,6 +397,10 @@ $(function(){
                     // Add choices
                     $kinkRow.find('.choices').each(function(){
                         var $selection = $(this).find('.choice.selected');
+
+                        if ($selection.length > 0) {
+                            drawCall.data.choices.push($selection.data('level'));
+                        }
                         var selection = ($selection.length > 0)
                                 ? $selection.data('level')
                                 : Object.keys(level)[0];
