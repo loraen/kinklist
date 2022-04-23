@@ -48,13 +48,13 @@ $(function(){
         kinks = inputKinks.parseKinksText(kinksText);
     }
 
-    function saveList() {
+    function saveSelections() {
         var selection = inputKinks.saveSelection();
     }
 
     $("#listType").change(function() {
-        saveList()
-        changeList();
+        saveSelections()
+        loadList();
     }); 
 
     async function init() {
