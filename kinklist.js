@@ -227,10 +227,7 @@ function getUsername() {
 
 
 
-function createCanvas() {
-    var username = getUsername();
-    var kinkInfo = dumpKinkSelection();
-
+function renderCanvas(username, kinkInfo) {
      // Constants
     const numCols = 6;
     const columnWidth = 250;
@@ -354,6 +351,9 @@ function exportCanvas() {
     $('#Loading').fadeIn();
     $('#URL').fadeOut();
 
+    var kinkInfo = dumpKinkSelection();
+    var canvas = renderCanvas(username, kinkInfo);
+
     // $(canvas).insertBefore($('#InputList'));
 
     // Send canvas to imgur
@@ -380,6 +380,8 @@ function exportCanvas() {
             alert('Failed to upload to imgur, could not connect');
         }
     });
+
+    $('#Loading').fadeOut();
 }
 
 
