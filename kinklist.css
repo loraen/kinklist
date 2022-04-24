@@ -109,25 +109,35 @@ td + td { border-left-style:none }
 	font-weight:700
 }
 
-#Export {
-	position:absolute;
-	left:310px;
+.export-button {
 	box-sizing:border-box;
 	color:#FFF;
 	text-transform:uppercase;
 	background-color:#4980ae;
 	font-size:18px;
-	width:150px;
-	height:36px;
+	padding: 8px 30px;
 	border-style:none;
 	border-radius:4px;
 	cursor:pointer;
 	transition:all .3s ease-in-out
 }
+.export-button:hover { opacity:.85 }
 
-#Export:hover { opacity:.85 }
+#Preview {
+	position:absolute;
+	left:310px;
+}
+#ExportImgur {
+	margin: 20px;
+	float:  right;
+}
+.previewContents {
+	margin:  20px;
+}
 
-#Loading {
+
+
+#URLLoading {
 	display:none;
 	overflow:visible;
 	line-height:26px;
@@ -139,7 +149,7 @@ td + td { border-left-style:none }
 	left:220px
 }
 
-#Loading:before {
+#URLLoading:before {
 	content:'';
 	position:absolute;
 	box-sizing:border-box;
@@ -331,7 +341,7 @@ td + td { border-left-style:none }
 	right:0;
 	bottom:0;
 	background-color:rgba(0,0,0,0.8);
-	display:none
+	display:none;
 }
 
 #EditOverlay #Kinks {
@@ -374,6 +384,7 @@ td + td { border-left-style:none }
 	vertical-align:middle;
 	margin-right:-.25em
 }
+
 
 #InputOverlay .widthWrapper {
 	display:inline-block;

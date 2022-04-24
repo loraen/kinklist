@@ -9,6 +9,7 @@
             integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
             crossorigin="anonymous">
         </script>
+        <script src="export.js"></script>
         <script src="kinklist.js"></script>
         <link rel="icon" type="image/x-icon" href="data:image/x-icon;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAALEgAACxIB0t1+/AAAABx0RVh0U29mdHdhcmUAQWRvYmUgRmlyZXdvcmtzIENTNui8sowAAAAWdEVYdENyZWF0aW9uIFRpbWUAMTAvMjEvMTV5ehY1AAAAZElEQVQ4jaWTwQ3AIAwDbcT+I9f9hjYQA/mAkO7igKAACWdFAF0A2gb0hP0uCyTATyAJSoaK5xGyEmTC9lktmORUdAQvBQ5cJshktoDk0HkmKRNUEmuE6ztYVXe7bT+jW7z9zi8qYiodCjCHKgAAAABJRU5ErkJggg==">
         <link rel="stylesheet" href="kinklist.css">
@@ -22,7 +23,7 @@
               <option value="full">Full: Taboo + Scenes</option>
             </select>
             
-            <div><span data-color="#DDDDDD" class="choice remove"></span> <span class="legend-text">Leave blank (or click again) if unapplicable / prefer not to answer</span></div>
+            <div><span data-color="#DDDDDD" class="choice remove"></span> <span class="legend-text">Leave blank (or click again) if unapplicable. Kinks and Empty Categories do not show up during export.</span></div>
 
             <div class="legend">
                 <div><span data-color="#c904c9" class="choice curious"></span> <span class="legend-text">Curious</span></div>
@@ -34,8 +35,8 @@
             </div>
             <div id="ExportWrapper">
                 <input type="text" id="URL">
-                <button id="Export">Export</button>
-                <div id="Loading">Loading</div>
+                <div id="URLLoading">Loading</div>
+                <button id="Preview" class="export-button">Export</button>
             </div>
             <button id="StartBtn"></button>
             <div id="InputList"></div>
@@ -63,5 +64,13 @@
 		<div id="DescriptionOverlay" class="overlay">
 			<div id="Description"></div>
 		</div>
+        <div id="PreviewOverlay" class="overlay">
+            <button id="ExportImgur" class="export-button">Export to Imgur</button> 
+
+            <div class="previewContents">
+                <div id="PreviewLoading">Loading</div>
+                <div id="PreviewCanvas"></div>
+            </div>
+        </div>
     </body>
 </html>
