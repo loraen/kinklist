@@ -2,31 +2,31 @@
 (Preferences)
 
 * Cut Cocks
-? Expresses an interest in circumcised penises, or penises with very little foreskin.
+? Interest in circumcised penises, or penises with very little foreskin.
 
 * Uncut Cock
-? Expresses an interest in penises that have not been circumsized and have a large amount of foreskin.
+? Interest in penises that have not been circumsized and have a large amount of foreskin.
 
 * Chubby
-? Expresses an interest in characters that are well-rounded, full in form, and pudgy.
+? Interest in well-rounded, full in form, and pudgy bodies.
 
 * Voluptuousness
-? Expresses an interest in characters with wider than average hips and large buttocks.
+? Interest in bodies with wider than average hips and large buttocks.
 
 * Very Fat Partners
-? Expresses an interest in characters that are exceptionally overweight or obese.
+? Interest in bodies that are exceptionally overweight or obese.
 
 * Skinny
-? Expresses an interest in characters that are waifish, thin, or slender.
+? Interest in bodies that are waifish, thin, or slender.
 
 * Very Lithe Partners
-? Expresses an interest in characters that are exceptionally thin or lank.
+? Interest in bodies that are exceptionally thin or lank.
 
 * Muscular Partners
-? Expresses an interest in characters that are powerfully-built and/or athletic.
+? Interest in bodies that are powerfully-built and/or athletic.
 
 * Very Muscular Partners
-? Expresses an interest in characters that are exceptionally muscular or toned.
+? Interest in bodies that are exceptionally muscular or toned.
 
 * Nonsexual Piercings
 ? Engaging in sex with a character who has piercings on parts of his or her body that are not of a sexual nature, such as but not limited to tongue, ears, bellybutton etc.
@@ -35,13 +35,14 @@
 ? Engaging in an RP in which at least one character has piercings that are located on the nipples or sexual areas of the body; typically cock piercings.
 
 * Body Hair (Legs)
+? Interest in legs that are hairy instead of shaven
 
 * Body Hair (Chest / Back)
 
 * Facial Hair
 
 * Pubic Hair
-? Expresses an interest in pubic hair, possibly in large or excessive quantities.
+? Interest in pubic hair, possibly in large or excessive quantities.
 
 * Tattoo
 
@@ -61,7 +62,7 @@
 ? Engaging in an RP where you and/or your partner are not undressed during sexual interaction.
 
 * Heels
-? Expresses an interest in the inclusion of high heeled shoes in the sexual context of an RP, or an interest in characters wearing such.
+? Interest in the inclusion of high heeled shoes in a sexual context, or an interest in people wearing such.
 
 * Latex
 ? The usage of latex and/or rubber material worn as clothing
