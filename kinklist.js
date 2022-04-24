@@ -36,10 +36,357 @@ var level = {};
 
 
 
+function drawLegend(context, colors){
+    context.font = "bold 13px Arial";
+    context.fillStyle = '#000000';
+
+    const ENTRY_LENGTH = 180;
+    const ENTRY_SPACING = 15
+
+    var levels = Object.keys(colors);
+    var x = context.canvas.width - ENTRY_SPACING - (ENTRY_LENGTH * levels.length);
+    for(var i = 0; i < levels.length; i++) {
+        context.beginPath();
+        context.arc(x + (ENTRY_LENGTH * i), 17, 8, 0, 2 * Math.PI, false);
+        context.fillStyle = colors[levels[i]];
+        context.fill();
+        context.strokeStyle = 'rgba(0, 0, 0, 0.5)'
+        context.lineWidth = 1;
+        context.stroke();
+
+        context.fillStyle = '#000000';
+        context.fillText(levels[i], x + ENTRY_SPACING + (i * ENTRY_LENGTH), 22);
+    }
+}
+
+function setupCanvas(width, height, username, colors){
+    var canvas = document.createElement('canvas');
+    canvas.width = width;
+    canvas.height = height;
+
+    var $canvas = $(canvas);
+    $canvas.css({
+        width: width,
+        height: height
+    });
+
+    var context = canvas.getContext('2d');
+    context.fillStyle = '#FFFFFF';
+    context.fillRect(0, 0, canvas.width, canvas.height);
+
+    context.font = "bold 24px Arial";
+    context.fillStyle = '#000000';
+    context.fillText('Kinklist 1.1 ' + username, 5, 25);
+
+    drawLegend(context, colors);
+    return { context: context, canvas: canvas };
+}
+
+var drawCallHandlers = {
+    simpleTitle: function(context, drawCall){
+        context.fillStyle = '#000000';
+        context.font = "bold 18px Arial";
+        context.fillText(drawCall.data, drawCall.x, drawCall.y + 5);
+    },
+    titleSubtitle: function(context, drawCall){
+        context.fillStyle = '#000000';
+        context.font = "bold 18px Arial";
+        context.fillText(drawCall.data.category, drawCall.x, drawCall.y + 5);
+
+        var fieldsStr = drawCall.data.fields.join(', ');
+        context.font = "italic 12px Arial";
+        context.fillText(fieldsStr, drawCall.x, drawCall.y + 20);
+    },
+    kinkRow: function(context, drawCall){
+        context.fillStyle = '#000000';
+        context.font = "12px Arial";
+
+        var x = drawCall.x + 5 + (drawCall.data.choices.length * 20);
+        var y = drawCall.y - 6;
+        context.fillText(drawCall.data.text, x, y);
+
+        // Circles
+        for(var i = 0; i < drawCall.data.choices.length; i++){
+            var choice = drawCall.data.choices[i];
+            var color = (
+                (choice == 0)
+                ? '#EEEEEE99'
+                : colors[choice]
+            );
+
+            var x = 10 + drawCall.x + (i * 20);
+            var y = drawCall.y - 10;
+
+            context.beginPath();
+            context.arc(x, y, 8, 0, 2 * Math.PI, false);
+            context.fillStyle = color;
+            context.fill();
+            context.strokeStyle = 'rgba(0, 0, 0, 0.5)'
+            context.lineWidth = 1;
+            context.stroke();
+        }
+
+    }
+};
+
+
+
+
+
+
+function dumpKinkSelection() {
+    var kinksInfo = {
+        categories: [],
+        longestKinkName: 0,
+        longestCatName: 0,
+        longestCategoryChoices: 0,
+
+        totalKinks: 0,
+
+        totalHeight: 0,
+    };
+
+    $('.kinkCategory').each(function() {
+        var $cat = $(this);
+        var catName = $cat.data('category');
+        var categoryData = kinks[catName];
+
+        var kinkCategory = {
+            name: catName,
+            fields: categoryData.fields,
+            fieldsLength: NaN,
+
+            kinks: [],
+        };
+
+        kinkCategory.fieldsLength = kinkCategory.fields.reduce(
+            (prev, field) => field.length + prev,
+            0
+        );
+        kinksInfo.longestCategoryChoices = Math.max(
+            kinksInfo.longestCategoryChoices,
+             kinkCategory.fieldsLength
+        );
+        kinksInfo.longestCatName = Math.max(
+            kinksInfo.longestCatName,
+            kinkCategory.name,
+        );
+
+        // Now see which ones are actually selected
+        $cat.find('.kinkRow').each(function(index){
+            var $kinkRow = $(this);
+            var kinkInfo = categoryData.kinks[index];
+
+            var kink = {
+                choices: [],
+                name: kinkInfo.kinkName,
+                desc: kinkInfo.kinkDesc,
+            };
+
+            $kinkRow.find('.choices').each(function(){
+                var $selection = $(this).find('.choice.selected');
+
+                var level = (($selection.length > 0)
+                    ? $selection.data('level')
+                    : 0
+                );
+                kink.choices.push(level);
+            });
+
+            if (kink.choices.reduce((prev, cur) => prev + cur, 0) == 0) {
+                // No choices made
+                return;
+            }
+
+            kinksInfo.longestKinkName = Math.max(
+                kinksInfo.longestKinkName,
+                kink.name.length
+            );
+            kinkCategory.kinks.push(kink);
+            kinksInfo.totalKinks += 1;
+        });
+
+        if (kinkCategory.kinks.length == 0) {
+            return;
+        }
+
+        kinksInfo.categories.push(kinkCategory);
+    });
+
+    return kinksInfo;
+
+};
+
+function getUsername() {
+    var username = prompt("Please enter your name");
+    if(typeof username !== 'string') return;
+    else if (username.length ) username = '(' + username + ')';
+
+    return username;
+}
+
+
+
+function createCanvas() {
+    var username = getUsername();
+    var kinkInfo = dumpKinkSelection();
+
+     // Constants
+    const numCols = 6;
+    const columnWidth = 250;
+    // const simpleTitleHeight = 35;
+    const titleSubtitleHeight = 50;
+    const kinkHeight = 25;
+
+    const offsets = {
+        left: 10,
+        right: 10,
+        top: 50,
+        middle: 50,
+        bottom: 10
+    };
+
+    // Initialize columns and drawStacks
+    var columns = [];
+    for(var i = 0; i < numCols; i++){
+        columns.push({ height: 0, categories: 0, drawStack: []});
+    }
+
+
+    const avgColHeight = (
+        kinkInfo.categories.length * titleSubtitleHeight
+        + kinkInfo.totalKinks * kinkHeight
+    ) / numCols;
+
+
+
+
+
+    // Sort the kink categories into columns
+    var columnIndex = 0;
+    for(var kinkCategory of kinkInfo.categories) {
+        var kinkCategoryHeight = (
+            titleSubtitleHeight
+            + kinkCategory.kinks.length * kinkHeight
+        );
+
+        // Determine which column to place this category in
+        if ((columns[columnIndex].height + (kinkCategoryHeight / 2)) > avgColHeight) columnIndex++;
+        while(columnIndex >= numCols) columnIndex--;
+
+        var column = columns[columnIndex];
+
+        // Draw Info for the category
+        var drawCall = {
+            y: column.height,
+            type: 'titleSubtitle',
+            data: {
+                category: kinkCategory.name,
+                fields: kinkCategory.fields,
+            },
+        };
+        column.height += titleSubtitleHeight;
+        column.categories += 1;
+        column.drawStack.push(drawCall);
+
+        for (var kink of kinkCategory.kinks) {
+            var drawCall = {
+                y: column.height,
+                type: 'kinkRow',
+                data: {
+                    choices: kink.choices,
+                    text: kink.name,
+                },
+            };
+            column.height += kinkHeight;
+            column.drawStack.push(drawCall);
+        }
+    }
+
+
+    // Adjust for the padding
+    for(var column of columns) {
+        column.height += column.categories * offsets.middle;
+    }
+
+
+    var tallestColumnHeight = 0;
+    for(var column of columns) {
+        if (tallestColumnHeight < column.height) {
+            tallestColumnHeight = column.height;
+        }
+    }
+
+    // Now Draw it all on the canvas
+    const canvasWidth = offsets.left + offsets.right + (columnWidth * numCols);
+    const canvasHeight = offsets.top + offsets.bottom + tallestColumnHeight;
+    var setup = setupCanvas(canvasWidth, canvasHeight, username, colors);
+    var context = setup.context;
+    var canvas = setup.canvas;
+
+
+    for(var i = 0; i < columns.length; i++){
+        var column = columns[i];
+        var drawStack = column.drawStack;
+        console.log(drawStack);
+
+        var drawX = offsets.left + (columnWidth * i);
+        for(var j = 0; j < drawStack.length; j++){
+            var drawCall = drawStack[j];
+            drawCall.x = drawX;
+            drawCall.y += offsets.top;
+            drawCallHandlers[drawCall.type](context, drawCall);
+        }
+    }
+
+    return canvas;
+}
+
+
+
+
+var imgurClientId = '9db53e5936cd02f';
+function exportCanvas() {
+    var username = getUsername();
+
+    $('canvas').remove();
+
+    $('#Loading').fadeIn();
+    $('#URL').fadeOut();
+
+    // $(canvas).insertBefore($('#InputList'));
+
+    // Send canvas to imgur
+    $.ajax({
+        url: 'https://api.imgur.com/3/image',
+        type: 'POST',
+        headers: {
+            // Your application gets an imgurClientId from Imgur
+            Authorization: 'Client-ID ' + imgurClientId,
+            Accept: 'application/json'
+        },
+        data: {
+            // convert the image data to base64
+            image:  canvas.toDataURL().split(',')[1],
+            type: 'base64'
+        },
+        success: function(result) {
+            $('#Loading').hide();
+            var url = 'https://i.imgur.com/' + result.data.id + '.png';
+            $('#URL').val(url).fadeIn();
+        },
+        fail: function(){
+            $('#Loading').hide();
+            alert('Failed to upload to imgur, could not connect');
+        }
+    });
+}
+
+
+
+
+
 $(function(){
-
-    var imgurClientId = '9db53e5936cd02f';
-
     async function loadList() {
         fileToRead = $("#listType").val() + '.txt';
         var kinksText = await $.get(fileToRead);
@@ -188,7 +535,7 @@ $(function(){
             inputKinks.parseHash();
 
             // Make export button work
-            $('#Export').on('click', inputKinks.export);
+            $('#Export').on('click', exportCanvas);
             $('#URL').on('click', function(){ this.select(); });
 
             // On resize, redo columns
@@ -221,247 +568,6 @@ $(function(){
                 input = char + input;
             }
             return input;
-        },
-        drawLegend: function(context){
-            context.font = "bold 13px Arial";
-            context.fillStyle = '#000000';
-
-            var levels = Object.keys(colors);
-            var x = context.canvas.width - 15 - (120 * levels.length);
-            for(var i = 0; i < levels.length; i++) {
-                context.beginPath();
-                context.arc(x + (120 * i), 17, 8, 0, 2 * Math.PI, false);
-                context.fillStyle = colors[levels[i]];
-                context.fill();
-                context.strokeStyle = 'rgba(0, 0, 0, 0.5)'
-                context.lineWidth = 1;
-                context.stroke();
-
-                context.fillStyle = '#000000';
-                context.fillText(levels[i], x + 15 + (i * 120), 22);
-            }
-        },
-        setupCanvas: function(width, height, username){
-            $('canvas').remove();
-            var canvas = document.createElement('canvas');
-            canvas.width = width;
-            canvas.height = height;
-
-            var $canvas = $(canvas);
-            $canvas.css({
-                width: width,
-                height: height
-            });
-            // $canvas.insertBefore($('#InputList'));
-
-            var context = canvas.getContext('2d');
-            context.fillStyle = '#FFFFFF';
-            context.fillRect(0, 0, canvas.width, canvas.height);
-
-            context.font = "bold 24px Arial";
-            context.fillStyle = '#000000';
-            context.fillText('Kinklist 1.1 ' + username, 5, 25);
-
-            inputKinks.drawLegend(context);
-            return { context: context, canvas: canvas };
-        },
-        drawCallHandlers: {
-            simpleTitle: function(context, drawCall){
-                context.fillStyle = '#000000';
-                context.font = "bold 18px Arial";
-                context.fillText(drawCall.data, drawCall.x, drawCall.y + 5);
-            },
-            titleSubtitle: function(context, drawCall){
-                context.fillStyle = '#000000';
-                context.font = "bold 18px Arial";
-                context.fillText(drawCall.data.category, drawCall.x, drawCall.y + 5);
-
-                var fieldsStr = drawCall.data.fields.join(', ');
-                context.font = "italic 12px Arial";
-                context.fillText(fieldsStr, drawCall.x, drawCall.y + 20);
-            },
-            kinkRow: function(context, drawCall){
-                context.fillStyle = '#000000';
-                context.font = "12px Arial";
-
-                var x = drawCall.x + 5 + (drawCall.data.choices.length * 20);
-                var y = drawCall.y - 6;
-                context.fillText(drawCall.data.text, x, y);
-
-                // Circles
-                for(var i = 0; i < drawCall.data.choices.length; i++){
-                    var choice = drawCall.data.choices[i];
-                    var color = colors[choice];
-
-                    var x = 10 + drawCall.x + (i * 20);
-                    var y = drawCall.y - 10;
-
-                    context.beginPath();
-                    context.arc(x, y, 8, 0, 2 * Math.PI, false);
-                    context.fillStyle = color;
-                    context.fill();
-                    context.strokeStyle = 'rgba(0, 0, 0, 0.5)'
-                    context.lineWidth = 1;
-                    context.stroke();
-                }
-
-            }
-        },
-        export: function(){
-            var username = prompt("Please enter your name");
-            if(typeof username !== 'string') return;
-            else if (username.length ) username = '(' + username + ')';
-
-            $('#Loading').fadeIn();
-            $('#URL').fadeOut();
-
-            // Constants
-            var numCols = 6;
-            var columnWidth = 250;
-            var simpleTitleHeight = 35;
-            var titleSubtitleHeight = 50;
-            var rowHeight = 25;
-            var offsets = {
-                left: 10,
-                right: 10,
-                top: 50,
-                bottom: 10
-            };
-
-            // Find out how many we have of everything
-            var numCats = $('.kinkCategory').length;
-            var dualCats = $('.kinkCategory th + th + th').length;
-            var simpleCats = numCats - dualCats;
-            var numKinks = $('.kinkRow').length;
-
-            // Determine the height required for all categories and kinks
-            var totalHeight = (
-                    (numKinks * rowHeight) +
-                    (dualCats * titleSubtitleHeight) +
-                    (simpleCats * simpleTitleHeight)
-            );
-
-            // Initialize columns and drawStacks
-            var columns = [];
-            for(var i = 0; i < numCols; i++){
-                columns.push({ height: 0, drawStack: []});
-            }
-
-            // Create drawcalls and place them in the drawStack
-            // for the appropriate column
-            var avgColHeight = totalHeight / numCols;
-            var columnIndex = 0;
-            $('.kinkCategory').each(function(){
-                var $cat = $(this);
-                var catName = $cat.data('category');
-                var category = kinks[catName];
-                var fields = category.fields;
-                var catKinks = category.kinks;
-
-                var catHeight = 0;
-                catHeight += (fields.length === 1) ? simpleTitleHeight : titleSubtitleHeight;
-                catHeight += (catKinks.length * rowHeight);
-
-                // Determine which column to place this category in
-                if((columns[columnIndex].height + (catHeight / 2)) > avgColHeight) columnIndex++;
-                while(columnIndex >= numCols) columnIndex--;
-                var column = columns[columnIndex];
-
-                // Drawcall for title
-                var drawCall = { y: column.height };
-                column.drawStack.push(drawCall);
-                if(fields.length < 2) {
-                    column.height += simpleTitleHeight;
-                    drawCall.type =  'simpleTitle';
-                    drawCall.data = catName;
-                }
-                else {
-                    column.height += titleSubtitleHeight;
-                    drawCall.type =  'titleSubtitle';
-                    drawCall.data = {
-                        category: catName,
-                        fields: fields
-                    };
-                }
-
-                // Drawcalls for kinks
-                $cat.find('.kinkRow').each(function(){
-                    var $kinkRow = $(this);
-                    var drawCall = { y: column.height, type: 'kinkRow', data: {
-                            choices: [],
-                            text: $kinkRow.data('kink')
-                    }};
-                    column.drawStack.push(drawCall);
-                    column.height += rowHeight;
-
-                    // Add choices
-                    $kinkRow.find('.choices').each(function(){
-                        var $selection = $(this).find('.choice.selected');
-
-                        if ($selection.length > 0) {
-                            drawCall.data.choices.push($selection.data('level'));
-                        }
-                        var selection = ($selection.length > 0)
-                                ? $selection.data('level')
-                                : Object.keys(level)[0];
-
-                        drawCall.data.choices.push(selection);
-                    });
-                });
-            });
-
-            var tallestColumnHeight = 0;
-            for(var i = 0; i < columns.length; i++){
-                if(tallestColumnHeight < columns[i].height) {
-                    tallestColumnHeight = columns[i].height;
-                }
-            }
-
-            var canvasWidth = offsets.left + offsets.right + (columnWidth * numCols);
-            var canvasHeight = offsets.top + offsets.bottom + tallestColumnHeight;
-            var setup = inputKinks.setupCanvas(canvasWidth, canvasHeight, username);
-            var context = setup.context;
-            var canvas = setup.canvas;
-
-            for(var i = 0; i < columns.length; i++) {
-                var column = columns[i];
-                var drawStack = column.drawStack;
-
-                var drawX = offsets.left + (columnWidth * i);
-                for(var j = 0; j < drawStack.length; j++){
-                    var drawCall = drawStack[j];
-                    drawCall.x = drawX;
-                    drawCall.y += offsets.top;
-                    inputKinks.drawCallHandlers[drawCall.type](context, drawCall);
-                }
-            }
-
-            //return $(canvas).insertBefore($('#InputList'));
-
-            // Send canvas to imgur
-            $.ajax({
-                url: 'https://api.imgur.com/3/image',
-                type: 'POST',
-                headers: {
-                    // Your application gets an imgurClientId from Imgur
-                    Authorization: 'Client-ID ' + imgurClientId,
-                    Accept: 'application/json'
-                },
-                data: {
-                    // convert the image data to base64
-                    image:  canvas.toDataURL().split(',')[1],
-                    type: 'base64'
-                },
-                success: function(result) {
-                    $('#Loading').hide();
-                    var url = 'https://i.imgur.com/' + result.data.id + '.png';
-                    $('#URL').val(url).fadeIn();
-                },
-                fail: function(){
-                    $('#Loading').hide();
-                    alert('Failed to upload to imgur, could not connect');
-                }
-            });
         },
         encode: function(base, input){
             var hashBase = inputKinks.hashChars.length;
@@ -660,6 +766,10 @@ $(function(){
             return newKinks;
         }					
     };
+
+
+
+
 
     $('#Edit').on('click', function(){
         var KinksText = inputKinks.inputListToText();
