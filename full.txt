@@ -365,7 +365,7 @@
 
 
 
-# Sensory: Touch & Stimulation
+# Sensory & Stimulation
 (Actor, Subject)
 
 * Sensation play
@@ -680,7 +680,7 @@
 
 
 
-# Impact Play / Pain / Sadism / Masochism
+# Impact Play / Pain
 (Giving, Receiving)
 
 * Light pain
@@ -1379,7 +1379,7 @@
 * Sexual Torture
 ? Torture that is sexual in nature, or greatly harms one sexually.
 
-* Genital Torture
+* Genital Torture / CBT
 ? Engaging in an RP in which at least one character's genitals will be given negative attention, the intent of which to be to cause physical pain.
 
 * Breast/Nipple Torture
