@@ -340,6 +340,8 @@ function ImgurExport(canvas) {
             var url = 'https://i.imgur.com/' + result.data.id + '.png';
             $('#URL').val(url).fadeIn();
             $('#PreviewOverlay').fadeOut();
+
+            window.open(url);
         },
         fail: function(){
             $('#URLLoading').hide();
