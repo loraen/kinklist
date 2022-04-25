@@ -44,13 +44,13 @@ $(window).on('load', function onWindowLoad(){
         kinks = inputKinks.parseKinksText(kinksText);
     }
 
-    function saveSelections() {
+    $("#listType").change(async function() {
         var selection = inputKinks.saveSelection();
-    }
+        await loadList();
+        inputKinks.restoreSavedSelection(selection);
 
-    $("#listType").change(function() {
-        saveSelections()
-        loadList();
+        inputKinks.fillInputList();
+        inputKinks.parseHash();
     }); 
 
     async function init() {
