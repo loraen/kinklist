@@ -127,6 +127,11 @@ td + td { border-left-style:none }
 	position:absolute;
 	left:310px;
 }
+#PreviewLoading {
+	background: white;
+    padding: 100px;
+    font-size: 80px;
+}
 #ExportImgur {
 	margin: 20px;
 	float:  right;

@@ -30,11 +30,9 @@ var addCssRule = function(selector, rules){
 };
 
 var kinks = {};
-var inputKinks = {}
-var colors = {}
-var level = {};
+var inputKinks = {};
 
-
+var legendChoices = {};
 
 
 $(window).on('load', function onWindowLoad(){
@@ -83,24 +81,30 @@ $(window).on('load', function onWindowLoad(){
         },
         createChoice: function(){
             var $container = $('<div>').addClass('choices');
-            var levels = Object.keys(level);
-            for(var i = 0; i < levels.length; i++) {
+
+            for (var key in legendChoices) {
+                if (key == 'remove') {
+                    continue;
+                }
+                var choice = legendChoices[key];
+
                 $('<button>')
-                        .addClass('choice')
-                        .addClass(level[levels[i]])
-                        .data('level', levels[i])
-                        .data('levelInt', i + 1)
-                        .attr('title', levels[i])
-                        .appendTo($container)
-                        .on('click', function(){
-                            if ($(this).hasClass('selected')) {
-                                 $(this).removeClass('selected');
-                            } else {
-                                $container.find('button').removeClass('selected');
-                                $(this).addClass('selected');
-                            }
-                        });
+                    .addClass('choice')
+                    .addClass(choice.cssName)
+                    .data('level', choice.key)
+                    .data('lvl-int', choice.lvlInt)
+                    .attr('title', choice.name)
+                    .appendTo($container)
+                    .on('click', function(){
+                        if ($(this).hasClass('selected')) {
+                             $(this).removeClass('selected');
+                        } else {
+                            $container.find('button').removeClass('selected');
+                            $(this).addClass('selected');
+                        }
+                    });
             }
+
             return $container;
         },
         createKink: function(fields, kink){
@@ -182,14 +186,16 @@ $(window).on('load', function onWindowLoad(){
         export: function() {
             $('#PreviewOverlay').fadeIn();
             $('#PreviewLoading').fadeIn();
-            $('#PreviewCanvas').fadeOut();
+            $('#PreviewCanvas').empty().hide();
+            $('#ExportImgur').hide();
 
             var username = getUsername();
-            var canvas = exportCanvas(username, level);
+            var canvas = exportCanvas(username, legendChoices);
 
             $('#PreviewCanvas').append(canvas);
-            $('#PreviewLoading').fadeOut();
+            $('#PreviewLoading').hide();
             $('#PreviewCanvas').fadeIn();
+            $('#ExportImgur').show();
         },
         exportImgur: function() {
             var canvas = $('#PreviewCanvas canvas').get(0);
@@ -317,17 +323,17 @@ $(window).on('load', function onWindowLoad(){
             var hashValues = [];
             $('#InputList .choices').each(function(){
                 var $this = $(this);
-                var lvlInt = $this.find('.selected').data('levelInt');
-                if(!lvlInt) lvlInt = 0;
+                var selected = $this.find('.selected')
+                var lvlInt = selected.length ? selected.data('lvl-int') : 0;
                 hashValues.push(lvlInt);
             });
-            return inputKinks.encode(Object.keys(colors).length, hashValues);
+            return inputKinks.encode(Object.keys(legendChoices).length, hashValues);
         },
         parseHash: function(){
             var hash = location.hash.substring(1);
             if(hash.length < 10) return;
 
-            var values = inputKinks.decode(Object.keys(colors).length, hash);
+            var values = inputKinks.decode(Object.keys(legendChoices).length, hash);
             var valueIndex = 0;
             $('#InputList .choices').each(function(){
                 var $this = $(this);
@@ -336,7 +342,7 @@ $(window).on('load', function onWindowLoad(){
                     // 0 means NOT Selected
                     return;
                 }
-                $this.children().eq(lvlInt - 1).addClass('selected');
+                $($this.children()[lvlInt - 1]).addClass('selected');
             });
         },
         saveSelection: function(){
@@ -482,19 +488,43 @@ $(window).on('load', function onWindowLoad(){
     }
 
     var stylesheet = document.styleSheets[0];
+
+
+    legendChoices['remove'] = {
+        color: '#EEEEEE',
+        name: 'Unanswered',
+        key: 'remove',
+        cssName: 'choice-remove',
+
+        lvlInt: 0,
+    };
+
     $('.legend .choice').each(function(){
         var $choice = $(this);
         var $parent = $choice.parent();
-        var text = $parent.text().trim().toLowerCase();
+        var text = $parent.text().trim();
         var color = $choice.data('color');
-        var cssClass = this.className.replace('choice ', '').trim().toLowerCase();
+        var legendKey = this.className.replace(/^.*choice-([^\s]+).*?/, '$1');
 
-        addCssRule('.choice.' + cssClass, 'background-color: ' + color + ';');
-        colors[text] = color;
-        level[text] = cssClass;
 
-        console.log(level);
+        legendChoices[legendKey] = {
+            color: color,
+            name: text,
+            key: legendKey,
+            cssName: 'choice-' + legendKey,
+
+            lvlInt: $choice.data('lvl-int'),
+        };
     });
+
+
+    for (var key in legendChoices) {
+        var choice = legendChoices[key];
+        addCssRule(
+            '.choice.' + choice.cssName,
+            'background-color: ' + choice.color + ';'
+        );
+    }
 
     (function(){
         var $popup = $('#InputOverlay');
@@ -590,7 +620,9 @@ $(window).on('load', function onWindowLoad(){
             },
             generateSecondary: function(kink){
                 var $container = $('<div class="kink-simple">');
-                $('<span class="choice">').addClass(level[kink.value]).appendTo($container);
+                var choice = legendChoices[kink.value];
+
+                $('<span class="choice">').addClass(choice.cssName).appendTo($container);
                 $('<span class="txt-category">').text(kink.category).appendTo($container);
                 if(kink.showField){
                     $('<span class="txt-field">').text(kink.field).appendTo($container);

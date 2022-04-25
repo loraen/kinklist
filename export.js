@@ -26,22 +26,27 @@ _exporterCanvasMethods = {
         const ENTRY_LENGTH = 180;
         const ENTRY_SPACING = 15
 
-        var levelKeys = Object.keys(this.colors);
-        var x = this.context.canvas.width - ENTRY_SPACING - (ENTRY_LENGTH * levelKeys.length);
-        for(var i = 0; i < levelKeys.length; i++) {
-            var levelKey = levelKeys[i];
-            var levelValue = this.colors[levelKey];
+        var x = this.context.canvas.width - ENTRY_SPACING - (ENTRY_LENGTH * Object.keys(this.legendChoices).length);
+        var legendDepth = 0;
+        for (var key in this.legendChoices) {
+            var choice = this.legendChoices[key];
+
+            if (choice.key == 'remove') {
+                continue
+            }
 
             this.context.beginPath();
-            this.context.arc(x + (ENTRY_LENGTH * i), 17, 8, 0, 2 * Math.PI, false);
-            this.context.fillStyle = levelValue;
+            this.context.arc(x + (ENTRY_LENGTH * legendDepth), 17, 8, 0, 2 * Math.PI, false);
+            this.context.fillStyle = choice.color;
             this.context.fill();
             this.context.strokeStyle = 'rgba(0, 0, 0, 0.5)';
             this.context.lineWidth = 1;
             this.context.stroke();
 
             this.context.fillStyle = '#000000';
-            this.context.fillText(levelKey, x + ENTRY_SPACING + (i * ENTRY_LENGTH), 22);
+            this.context.fillText(choice.name, x + ENTRY_SPACING + (legendDepth * ENTRY_LENGTH), 22);
+        
+            legendDepth++;
         }
 
         // Now render the individual columns
@@ -84,20 +89,13 @@ _exporterCanvasMethods = {
         // Circles
         for(var i = 0; i < drawCall.data.choices.length; i++){
             var choice = drawCall.data.choices[i];
-            console.log(choice)
-
-            var color = (
-                (choice == 'remove')
-                ? '#EEEEEE99'
-                : this.colors[choice]
-            );
 
             var x = 10 + drawCall.x + (i * 20);
             var y = drawCall.y - 10;
 
             context.beginPath();
             context.arc(x, y, 8, 0, 2 * Math.PI, false);
-            context.fillStyle = color;
+            context.fillStyle = choice.color;
             context.fill();
             context.strokeStyle = 'rgba(0, 0, 0, 0.5)'
             context.lineWidth = 1;
@@ -107,15 +105,15 @@ _exporterCanvasMethods = {
 };
 
 
-function ExporterCanvas(width, height, username, colors, columns) {
+function ExporterCanvas(width, height, username, legendChoices, columns) {
     let self = Object.create(_exporterCanvasMethods);
 
     self.username = username;
-    self.colors = colors;
+    self.legendChoices = legendChoices;
     self.columns = columns;
 
     self.initCanvas(width, height);
-    self.renderCanvas(this.context);
+    self.renderCanvas();
 
     return self;
 };
@@ -126,7 +124,7 @@ function ExporterCanvas(width, height, username, colors, columns) {
 
 
 
-function dumpKinkSelection(levels) {
+function dumpKinkSelection(legendChoices) {
     var kinksInfo = {
         categories: [],
         longestKinkName: 0,
@@ -178,15 +176,15 @@ function dumpKinkSelection(levels) {
             $kinkRow.find('.choices').each(function(){
                 var $selection = $(this).find('.choice.selected');
 
-                var level = (($selection.length > 0)
-                    ? levels[$selection.data('level')]
-                    : 'remove'
+                var choice = (($selection.length > 0)
+                    ? legendChoices[$selection.data('level')]
+                    : legendChoices['remove']
                 );
-                kink.choices.push(level);
+                kink.choices.push(choice);
             });
 
             var choicesSelected = kink.choices.reduce(
-                (prev, cur) => prev + (cur == 'remove' ? 0 : 1),
+                (prev, cur) => prev + (cur.key == 'remove' ? 0 : 1),
                 0
             );
             if (choicesSelected == 0) {
@@ -239,7 +237,8 @@ const offsets = {
 
 
 
-function renderCanvas(username, kinkInfo) {
+function exportCanvas(username, legendChoices) {
+    var kinkInfo = dumpKinkSelection(legendChoices);
 
     // Initialize columns and drawStacks
     var columns = [];
@@ -250,7 +249,6 @@ function renderCanvas(username, kinkInfo) {
 
     const avgColHeight = (
         kinkInfo.categories.length * titleSubtitleHeight
-        + kinkInfo.categories.length * offsets.middle
         + kinkInfo.totalKinks * kinkHeight
     ) / numCols;
 
@@ -312,20 +310,9 @@ function renderCanvas(username, kinkInfo) {
     // Now Draw it all on the canvas
     const canvasWidth = offsets.left + offsets.right + (columnWidth * numCols);
     const canvasHeight = offsets.top + offsets.bottom + tallestColumnHeight;
-    var setup = ExporterCanvas(canvasWidth, canvasHeight, username, colors, columns);
+    var setup = ExporterCanvas(canvasWidth, canvasHeight, username, legendChoices, columns);
 
     return setup.canvas;
-}
-
-
-
-
-
-function exportCanvas(username, levels) {
-    var kinkInfo = dumpKinkSelection(levels);
-    var canvas = renderCanvas(username, kinkInfo);
-
-    return canvas;
 }
 
 

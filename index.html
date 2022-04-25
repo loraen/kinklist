@@ -23,15 +23,15 @@
               <option value="full">Full: Taboo + Scenes</option>
             </select>
             
-            <div><span data-color="#DDDDDD" class="choice remove"></span> <span class="legend-text">Leave blank (or click again) if unapplicable. Kinks and Empty Categories do not show up during export.</span></div>
+            <div><span data-color="#DDDDDD" class="choice choice-remove"></span> <span class="legend-text">Leave blank (or click again) if unapplicable. Kinks and Empty Categories do not show up during export.</span></div>
 
             <div class="legend">
-                <div><span data-color="#c904c9" class="choice curious"></span> <span class="legend-text">Curious</span></div>
-                <div><span data-color="#6DB5FE" class="choice favorite"></span> <span class="legend-text">Favorite</span></div>
-                <div><span data-color="#23FD22" class="choice like"></span> <span class="legend-text">Like</span></div>
-                <div><span data-color="#FDFD6B" class="choice indifferent"></span> <span class="legend-text">Indifferent</span></div>
-                <div><span data-color="#DB6C00" class="choice maybe"></span> <span class="legend-text">Maybe (Soft Limit)</span></div>
-                <div><span data-color="#920000" class="choice limit"></span> <span class="legend-text">Hard Limit</span></div>
+                <div><span data-color="#c904c9" class="choice choice-curious" data-lvl-int="1"></span> <span class="legend-text">Curious</span></div>
+                <div><span data-color="#6DB5FE" class="choice choice-favorite" data-lvl-int="2"></span> <span class="legend-text">Favorite</span></div>
+                <div><span data-color="#23FD22" class="choice choice-like" data-lvl-int="3"></span> <span class="legend-text">Like</span></div>
+                <div><span data-color="#FDFD6B" class="choice choice-indifferent" data-lvl-int="4"></span> <span class="legend-text">Indifferent</span></div>
+                <div><span data-color="#DB6C00" class="choice choice-maybe" data-lvl-int="5"></span> <span class="legend-text">Maybe (Soft Limit)</span></div>
+                <div><span data-color="#920000" class="choice choice-limit" data-lvl-int="6"></span> <span class="legend-text">Hard Limit</span></div>
             </div>
             <div id="ExportWrapper">
                 <input type="text" id="URL">
@@ -42,11 +42,7 @@
             <div id="InputList"></div>
         </div>
         <div id="EditOverlay" class="overlay">
-            <textarea id="Kinks">
-# Loading
-(General)
-* Do you like this list?
-            </textarea>
+            <textarea id="Kinks"></textarea>
             <button id="KinksOK">Accept</button>
         </div>
         <div id="InputOverlay" class="overlay">
@@ -66,7 +62,6 @@
 		</div>
         <div id="PreviewOverlay" class="overlay">
             <button id="ExportImgur" class="export-button">Export to Imgur</button> 
-
             <div class="previewContents">
                 <div id="PreviewLoading">Loading</div>
                 <div id="PreviewCanvas"></div>
