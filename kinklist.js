@@ -96,7 +96,7 @@ $(window).on('load', function onWindowLoad(){
                     .attr('title', choice.name)
                     .appendTo($container)
                     .on('click', function(){
-                        var $row = $container.parent('td');
+                        var $row = $container.parent('.choice-list');
 
                         if ($(this).hasClass('selected')) {
                              $(this).removeClass('selected');
@@ -118,9 +118,9 @@ $(window).on('load', function onWindowLoad(){
                 var $choices = inputKinks.createChoice();
                 $choices.data('field', fields[i]);
                 $choices.addClass('choice-' + strToClass(fields[i]));
-                $('<td class="unselected">').append($choices).appendTo($row);
+                $('<td class="choice-list unselected">').append($choices).appendTo($row);
             }
-            var kinkLabel = $('<td>').text(kink.kinkName).appendTo($row);
+            var kinkLabel = $('<td class="choice-name">').text(kink.kinkName).appendTo($row);
             if(kink.kinkDesc) {showDescriptionButton(kink.kinkDesc, kinkLabel);}
             $row.addClass('kink-' + strToClass(kink.kinkName));
             return $row;
@@ -188,7 +188,7 @@ $(window).on('load', function onWindowLoad(){
             });
         },
         updateRowSelection: function() {
-            $('#InputList').find('td').each(function() {
+            $('#InputList').find('.choice-list').each(function() {
                 var $this = $(this);
 
                 var selected = $this.find('.selected');
