@@ -46,6 +46,10 @@ td {
 
 td + td { border-left-style:none }
 
+td.unselected {
+	background: lightgrey;
+}
+
 .choice {
 	box-sizing:border-box;
 	width:15px;

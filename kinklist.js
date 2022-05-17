@@ -96,11 +96,16 @@ $(window).on('load', function onWindowLoad(){
                     .attr('title', choice.name)
                     .appendTo($container)
                     .on('click', function(){
+                        var $row = $container.parent('td');
+
                         if ($(this).hasClass('selected')) {
                              $(this).removeClass('selected');
+;
+                            $row.addClass('unselected');
                         } else {
                             $container.find('button').removeClass('selected');
                             $(this).addClass('selected');
+                            $row.removeClass('unselected');
                         }
                     });
             }
