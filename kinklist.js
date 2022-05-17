@@ -118,7 +118,7 @@ $(window).on('load', function onWindowLoad(){
                 var $choices = inputKinks.createChoice();
                 $choices.data('field', fields[i]);
                 $choices.addClass('choice-' + strToClass(fields[i]));
-                $('<td>').append($choices).appendTo($row);
+                $('<td class="unselected">').append($choices).appendTo($row);
             }
             var kinkLabel = $('<td>').text(kink.kinkName).appendTo($row);
             if(kink.kinkDesc) {showDescriptionButton(kink.kinkDesc, kinkLabel);}
@@ -185,6 +185,18 @@ $(window).on('load', function onWindowLoad(){
             // Make things update hash
             $('#InputList').find('button.choice').on('click', function(){
                 location.hash = inputKinks.updateHash();
+            });
+        },
+        updateRowSelection: function() {
+            $('#InputList').find('td').each(function() {
+                var $this = $(this);
+
+                var selected = $this.find('.selected');
+                if (selected.length == 0) {
+                    $this.addClass('unselected');
+                } else {
+                    $this.removeClass('unselected');
+                }
             });
         },
 
@@ -349,6 +361,8 @@ $(window).on('load', function onWindowLoad(){
                 }
                 $($this.children()[lvlInt - 1]).addClass('selected');
             });
+
+            inputKinks.updateRowSelection();
         },
         saveSelection: function(){
             var selection = [];
@@ -391,6 +405,8 @@ $(window).on('load', function onWindowLoad(){
                     $(selector).addClass('selected');
                 }
                 location.hash = inputKinks.updateHash();
+
+                inputKinks.updateRowSelection();
             }, 300);
         },
         parseKinksText: function(kinksText){
